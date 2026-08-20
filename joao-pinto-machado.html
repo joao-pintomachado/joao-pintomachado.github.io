@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>João Pinto Machado — Automation &amp; Analytics Engineer</title>
+<meta name="description" content="Seven chapters. Fifteen systems. Each one: what it is, how it was set up, what it delivered.">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;1,6..96,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1313;
+  --panel:#151A19;
+  --panel-2:#222423;
+  --line:rgba(240,238,232,.13);
+  --line-2:rgba(240,238,232,.07);
+  --white:#F2F0EA;
+  --mute:#8E948F;
+  --dim:#666B67;
+  --serif:"Bodoni Moda",Didot,"Times New Roman",serif;
+  --sans:"Archivo",Helvetica,system-ui,sans-serif;
+  --pad:clamp(20px,4.4vw,64px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--white);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+:focus-visible{outline:1px solid var(--white);outline-offset:4px}
+.skip{position:absolute;left:-9999px;background:var(--white);color:var(--bg);padding:10px 16px;z-index:99}
+.skip:focus{left:0;top:0}
+
+/* ---------- typography primitives ---------- */
+.lbl{font-family:var(--sans);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+.par{font-family:var(--serif);font-style:italic;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.dsp{font-family:var(--serif);font-weight:400;line-height:.92;letter-spacing:-.005em}
+h1,h2,h3{margin:0;font-weight:400}
+
+/* ---------- chrome ---------- */
+.bar{position:fixed;top:0;left:0;right:0;z-index:60;background:rgba(14,19,19,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-2)}
+.bar-in{display:flex;align-items:center;gap:16px;padding:0 var(--pad);height:58px}
+.logo{font-family:var(--serif);font-size:17px;letter-spacing:.16em;text-transform:uppercase}
+.barnav{margin-left:auto;display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none}
+.barnav::-webkit-scrollbar{display:none}
+.barnav a{padding:6px 10px;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);white-space:nowrap;transition:color .3s}
+.barnav a:hover,.barnav a.on{color:var(--white)}
+.pillbtn{border:1px solid var(--line);border-radius:100px;padding:8px 16px;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;transition:.35s;white-space:nowrap}
+.pillbtn:hover{background:var(--white);color:var(--bg);border-color:var(--white)}
+
+/* ---------- stage ---------- */
+.stage{padding:58px 0 0}
+.panel{background:var(--panel);border-radius:clamp(10px,1.6vw,20px);margin:14px var(--pad);padding:clamp(26px,5vw,72px) clamp(22px,5vw,72px);position:relative;overflow:hidden}
+.panel.deep{background:var(--panel-2)}
+.panel.flush{padding:0}
+.enter{animation:fade .5s ease both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(22px)}
+.rv.in{opacity:1;transform:none;transition:opacity 1s cubic-bezier(.16,.8,.3,1),transform 1s cubic-bezier(.16,.8,.3,1)}
+
+/* ---------- hero ---------- */
+.hero{min-height:min(78vh,720px);display:flex;flex-direction:column;justify-content:center}
+.hero .kick{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;border-bottom:1px solid var(--line-2);padding-bottom:16px;margin-bottom:clamp(24px,5vw,54px)}
+.namemark{font-family:var(--serif);font-weight:400;font-size:clamp(2.9rem,13.5vw,9.5rem);line-height:.82;letter-spacing:-.015em;text-transform:uppercase}
+.namemark span{display:block}
+.hero-foot{display:grid;grid-template-columns:1fr minmax(240px,32%);gap:clamp(20px,4vw,50px);align-items:end;margin-top:clamp(26px,5vw,56px);border-top:1px solid var(--line-2);padding-top:22px}
+.hero-foot p{margin:0;color:var(--mute);font-size:13.5px;max-width:46ch}
+.hero-right{display:flex;gap:16px;align-items:flex-end;justify-content:flex-end}
+.hero-right img{width:66px;height:66px;border-radius:50%;object-fit:cover;filter:grayscale(1) contrast(1.05);flex:none}
+.tag{font-family:var(--serif);font-style:italic;font-size:clamp(1.05rem,2.1vw,1.5rem);line-height:1.3;max-width:22ch;text-align:right}
+
+/* ---------- section head ---------- */
+.shead{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap;margin-bottom:clamp(22px,4vw,44px)}
+.shead h2{font-family:var(--serif);font-size:clamp(1.6rem,4.4vw,3rem);line-height:1;text-transform:uppercase;letter-spacing:-.005em}
+
+/* ---------- chapter index ---------- */
+.idx{border-top:1px solid var(--line-2)}
+.idx a{display:grid;grid-template-columns:58px minmax(0,1fr) minmax(0,1.25fr) 70px;gap:clamp(12px,2.4vw,32px);align-items:center;padding:clamp(16px,2.4vw,26px) 0;border-bottom:1px solid var(--line-2);transition:padding .45s cubic-bezier(.16,.8,.3,1),background .45s}
+.idx a:hover{padding-left:16px;padding-right:16px;background:rgba(240,238,232,.028)}
+.idx .n{font-family:var(--serif);font-size:12px;color:var(--dim);letter-spacing:.1em}
+.idx .t{font-family:var(--serif);font-size:clamp(1.1rem,2.5vw,1.75rem);line-height:1.1;text-transform:uppercase}
+.idx .t em{display:block;font-style:normal;font-family:var(--sans);font-size:9.5px;letter-spacing:.2em;color:var(--dim);margin-top:8px}
+.idx .d{color:var(--mute);font-size:13px;max-width:52ch}
+.idx .c{text-align:right;font-family:var(--serif);font-size:11px;color:var(--dim);letter-spacing:.08em}
+
+/* ---------- chapter view ---------- */
+.chlede{font-family:var(--serif);font-size:clamp(1.15rem,2.7vw,1.85rem);line-height:1.32;max-width:26ch}
+.chgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,60px);align-items:start}
+.rolebox{border-top:1px solid var(--line);padding-top:18px;margin-bottom:26px}
+.rolebox h3{font-family:var(--serif);font-size:1.15rem;line-height:1.2;margin-bottom:5px}
+.rolebox .rm{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:12px}
+.rolebox ul{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:9px}
+.rolebox li{color:var(--mute);font-size:13.5px;padding-left:20px;position:relative}
+.rolebox li::before{content:"—";position:absolute;left:0;color:var(--dim)}
+
+/* project list */
+.plist{border-top:1px solid var(--line-2)}
+.plist a{display:grid;grid-template-columns:44px 1fr auto;gap:clamp(12px,2.4vw,26px);align-items:center;padding:clamp(15px,2.2vw,22px) 0;border-bottom:1px solid var(--line-2);transition:padding .45s cubic-bezier(.16,.8,.3,1),background .45s}
+.plist a:hover{padding-left:14px;padding-right:14px;background:rgba(240,238,232,.028)}
+.plist .n{font-family:var(--serif);font-size:11px;color:var(--dim)}
+.plist h3{font-family:var(--serif);font-size:clamp(1rem,2.1vw,1.35rem);line-height:1.18}
+.plist p{margin:6px 0 0;color:var(--mute);font-size:12.5px;max-width:62ch}
+.plist .go{font-family:var(--serif);font-style:italic;font-size:11px;color:var(--dim);letter-spacing:.1em;white-space:nowrap}
+.plist a:hover .go{color:var(--white)}
+
+/* ---------- project view ---------- */
+.crumb{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:clamp(20px,4vw,40px)}
+.crumb a{color:var(--mute)}
+.crumb a:hover{color:var(--white)}
+.ptitle{font-family:var(--serif);font-size:clamp(1.9rem,6.2vw,4.4rem);line-height:.98;text-transform:uppercase;letter-spacing:-.012em;max-width:15ch}
+.pmeta{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:clamp(20px,3.4vw,34px);padding-top:18px;border-top:1px solid var(--line-2);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.pmeta b{color:var(--white);font-weight:400}
+.pwhat{font-family:var(--serif);font-size:clamp(1.05rem,2.3vw,1.6rem);line-height:1.42;max-width:34ch;margin-top:clamp(24px,4vw,44px)}
+
+/* setup steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--line-2);border:1px solid var(--line-2);border-radius:12px;overflow:hidden}
+.step{background:var(--panel-2);padding:clamp(18px,2.4vw,26px)}
+.step .sn{font-family:var(--serif);font-size:11px;color:var(--dim);letter-spacing:.1em;display:block;margin-bottom:14px}
+.step p{margin:0;font-size:13.5px;color:var(--mute);line-height:1.55}
+.step p b{color:var(--white);font-weight:400}
+
+/* delivered numerals */
+.deliv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:clamp(26px,4.5vw,54px) clamp(20px,4vw,40px)}
+.deliv > div:nth-child(2n){padding-top:clamp(14px,3vw,42px)}
+.deliv > div:nth-child(3n){padding-top:clamp(20px,4.4vw,64px)}
+.deliv .num{font-family:var(--serif);font-weight:400;font-size:clamp(2.7rem,7vw,5rem);line-height:.9;letter-spacing:-.02em;display:block}
+.deliv .num i{font-size:.42em;font-style:italic;letter-spacing:0;margin-left:.12em;vertical-align:baseline}
+.deliv p{margin:14px 0 0;font-size:12.5px;color:var(--mute);max-width:24ch;line-height:1.5}
+
+.tools{display:flex;flex-wrap:wrap;gap:8px}
+.tools span{border:1px solid var(--line-2);border-radius:100px;padding:7px 14px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line-2);border:1px solid var(--line-2);border-radius:12px;overflow:hidden;margin:0 var(--pad) 14px}
+.pager a{background:var(--panel);padding:clamp(18px,2.6vw,30px);transition:background .4s}
+.pager a:hover{background:var(--panel-2)}
+.pager em{font-style:normal;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);display:block;margin-bottom:9px}
+.pager b{font-family:var(--serif);font-weight:400;font-size:clamp(.95rem,1.9vw,1.25rem);line-height:1.15;display:block}
+.pager a:last-child{text-align:right}
+
+/* ---------- toolkit / contact ---------- */
+.tk{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(22px,3.4vw,44px)}
+.tk h4{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin:0 0 14px;padding-bottom:12px;border-bottom:1px solid var(--line-2);font-weight:400}
+.tk ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.tk li{font-size:13px;color:var(--mute)}
+.edu{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:clamp(22px,3.4vw,44px)}
+.edu h3{font-family:var(--serif);font-size:1.15rem;line-height:1.22;margin-bottom:8px}
+.edu .w{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:12px}
+.edu p{color:var(--mute);font-size:13px;margin:8px 0 0}
+.cbig{font-family:var(--serif);font-size:clamp(2rem,7.4vw,5.2rem);line-height:.98;text-transform:uppercase;letter-spacing:-.015em}
+.clist{border-top:1px solid var(--line-2);margin-top:clamp(28px,4.4vw,48px)}
+.clist a,.clist span{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:17px 0;border-bottom:1px solid var(--line-2);font-size:13.5px;color:var(--mute);transition:padding .4s,color .4s}
+.clist a:hover{padding-left:12px;color:var(--white)}
+.clist em{font-style:normal;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+
+footer{padding:26px var(--pad) 40px;display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);border-top:1px solid var(--line-2);margin-top:14px}
+
+/* ---------- responsive ---------- */
+@media (max-width:880px){
+  .hero-foot{grid-template-columns:1fr;gap:22px}
+  .hero-right{justify-content:flex-start}
+  .tag{text-align:left;max-width:30ch}
+  .chgrid{grid-template-columns:1fr}
+  .idx a{grid-template-columns:34px 1fr;row-gap:10px}
+  .idx .d{grid-column:2}
+  .idx .c{display:none}
+  .plist a{grid-template-columns:28px 1fr}
+  .plist .go{display:none}
+  .deliv > div{padding-top:0!important}
+  .pager{grid-template-columns:1fr}
+  .pager a:last-child{text-align:left}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+  .rv{opacity:1;transform:none}
+}
+@media print{
+  .bar,.pager{display:none}
+  body{background:#fff;color:#000}
+  .panel{background:#fff;margin:0;padding:16px 0;border-bottom:1px solid #ddd;border-radius:0}
+  .step,.panel.deep{background:#fff}
+  .rv{opacity:1;transform:none}
+  .step p,.deliv p,.idx .d,.rolebox li,.tk li{color:#333}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#stage">Skip to content</a>
+
+<header class="bar">
+  <div class="bar-in">
+    <a class="logo" href="#/">JPM</a>
+    <nav class="barnav" id="barnav"></nav>
+    <a class="pillbtn" href="#/contact">Contact</a>
+  </div>
+</header>
+
+<div class="stage" id="stage" tabindex="-1"></div>
+
+<footer>
+  <span>João Pinto Machado — Porto, Portugal</span>
+  <span>Automation &amp; Analytics Engineer</span>
+</footer>
+
+<script>
+/* ===========================================================
+   ALL CONTENT IS IN `DATA`. Nothing below it needs editing.
+   Each project has exactly three beats:
+     what     — one sentence
+     setup    — 3–5 steps, how it was built
+     delivered— 2–3 results, each a figure + a caption
+   =========================================================== */
+const DATA = {
+
+profile:{
+  name:"João Pinto Machado",
+  role:"Automation & Analytics Engineer",
+  tagline:"I spent five years being the manual process. Then I started deleting it.",
+  intro:"Commercial operations across marketplaces, retail and luxury e-commerce — and underneath it, the systems I built so the team stopped doing the work by hand. SQL and semantic models at the bottom, Python and scheduled pipelines in the middle, decisions at the top.",
+  location:"Porto, Portugal",
+  email:"joao.pintomachado@gmail.com",
+  phone:"+351 919 999 363",
+  showPhone:false,
+  linkedin:"https://www.linkedin.com/in/jo%C3%A3o-pinto-machado-5a8380190",
+  cvUrl:"",
+  availability:"At Farfetch, finishing an Executive Master in Business Analytics & AI in December 2026. Open to automation engineering, analytics engineering and business systems roles — remote or Porto."
+},
+
+chapters:[
+ {id:"origin",era:"2020 — 2021",title:"Doing it by hand",
+  lede:"Two operations roles where I was the process. Everything after this starts here: I learned what manual work costs before I learned how to remove it.",
+  roles:[
+   {title:"Operations Manager",org:"LovelyMemories Lda · Porto",when:"2020 – 2021",
+    points:["Ran customer onboarding end to end — the repetitive part was mine to do","Automated the onboarding sequence on E-goi, my first production automation"]},
+   {title:"Sales Manager",org:"Product Masters Lda · Porto",when:"2020 – 2021",
+    points:["Sales operations, commission calculation and payment scheduling","Commission maths done monthly, by hand, in a spreadsheet"]}]},
+
+ {id:"record",era:"2021 — 2022",title:"A system of record",
+  lede:"A commercial team running on personal spreadsheets has no memory. I built the thing that gave it one — from an empty CRM instance, not a template.",
+  roles:[
+   {title:"Inside Sales Manager",org:"Dott.pt · Porto",when:"Apr 2021 – Apr 2022",
+    points:["Managed seller onboarding and performance guidance across the marketplace","Designed and built the commercial team's CRM from scratch","Used SQL over marketplace seller data to replace manual reporting exports"]}]},
+
+ {id:"integrate",era:"2022 — 2023",title:"Making systems talk",
+  lede:"Dott was acquired by Worten. Suddenly there were more systems, and none of them agreed with each other. Integration became the job.",
+  roles:[
+   {title:"Iberian Business Developer",org:"Worten · Porto",when:"May 2022 – Sep 2023",
+    points:["Seller acquisition across Iberian marketplaces using data-driven prospecting","Built the Mirakl → Insightly → Power BI pipeline","Automated CRM workflows across Salesforce and HubSpot"]}]},
+
+ {id:"warehouse",era:"2023 — 2024",title:"Going to the warehouse",
+  lede:"Moving into project management put me next to the enterprise data warehouse. SQL stopped being a convenience and became the tool.",
+  roles:[
+   {title:"Project Manager",org:"Worten · Porto",when:"Sep 2023 – Aug 2024",
+    points:["Led cross-functional projects end to end: scoping, timelines, delivery, stakeholder communication","Queried the enterprise data warehouse for the recurring reporting used at C-level","Ran the discontinued-product analytics programme","Built a Python algorithm for leaflet photo distribution"]}]},
+
+ {id:"number",era:"2024 — 2025",title:"Owning the number",
+  lede:"A year with no engineering in the job description — and the reason the rest holds up. I know which workflows are worth automating because I have carried the target that depended on them.",
+  roles:[
+   {title:"Senior Sales Manager",org:"PortalPRO Portugal · Porto",when:"Sep 2024 – Dec 2025",
+    points:["Drove 200% revenue growth across Real Estate and Condominium Administration","Delivered 1,000+ service sales","Built the recurring performance reporting senior management ran on","Trained and mentored the sales team"]}]},
+
+ {id:"model",era:"2026",title:"Modelling, then building",
+  lede:"At Farfetch the data existed and the definitions did not. I built the semantic layer first, then the tooling on top of it — inside an IT environment with no admin rights and no cloud project creation.",
+  roles:[
+   {title:"Account Manager — Merchant Brand Operations",org:"Farfetch · Porto",when:"Jan 2026 – Present",
+    points:["Own commercial performance for boutique partners across the Middle East and Europe","Write SQL against the commercial data warehouse for sell-through, stock ageing and YoY analysis","Build and maintain the team's Looker (LookML) and Tableau Cloud reporting layer","Identified the team's highest-cost manual workflows and built what replaced them"]}]},
+
+ {id:"forward",era:"2026 →",title:"Sharpening the tools",
+  lede:"Formalising what I learned by building, and testing it on problems nobody assigned me. The master finishes in December.",
+  roles:[
+   {title:"Executive Master in Business Analytics & Artificial Intelligence",org:"Porto Business School — University of Porto",when:"Jan 2026 – Dec 2026",
+    points:["60 ECTS, second-cycle under Bologna/EHEA; AMBA, AACSB and EFMD accredited","Machine learning, predictive modelling, data engineering, BI, data visualisation, AI governance"]}]}
+],
+
+projects:[
+
+{id:"egoi",ch:"origin",name:"Automated Onboarding Sequence",org:"LovelyMemories",when:"2020 – 2021",
+ what:"The first thing I ever automated — a hand-assembled customer welcome sequence turned into a triggered flow.",
+ setup:[
+  "Separated the onboarding steps that were <b>identical for every customer</b> from the ones that needed judgement",
+  "Rebuilt the identical portion as a <b>triggered sequence on E-goi</b>",
+  "Left the judgement steps manual on purpose rather than forcing everything into the tool"],
+ delivered:[
+  ["First","Production automation I ever shipped"],
+  ["Every","New customer onboarded without a person assembling the sequence"]],
+ tools:["E-goi","Marketing automation","Process mapping"]},
+
+{id:"commission",ch:"origin",name:"Commission &amp; Payment Scheduling",org:"Product Masters",when:"2020 – 2021",
+ what:"Monthly commission calculation and payment scheduling for a sales team — the manual process that taught me spreadsheets have a ceiling.",
+ setup:[
+  "Owned the <b>monthly commission calculation</b> across the sales team",
+  "Derived the <b>payment schedule</b> from it rather than tracking it separately",
+  "Structured the calculation so it was <b>reproduced, not reconstructed</b>, each cycle"],
+ delivered:[
+  ["Monthly","Commission and payment cycles ran predictably"],
+  ["Pattern","Make the recurring thing reproducible first, automate it second"]],
+ tools:["Advanced Excel","Sales operations"]},
+
+{id:"insightly-crm",ch:"record",name:"Insightly CRM, Built From Zero",org:"Dott.pt",when:"2021 – 2022",
+ what:"An empty CRM instance turned into the commercial team's single source of truth — object model, fields, pipeline stages, permissions and automation rules, all designed around how the team actually worked.",
+ setup:[
+  "Mapped the <b>real commercial process</b> first — stages, ownership, what counted as progress",
+  "Built the <b>object model from scratch</b>: entities, custom fields, pipeline stages, user permissions",
+  "Added <b>automation rules</b> for stage transitions, ownership assignment and follow-ups",
+  "Wired it to surrounding systems via <b>Zapier and direct REST calls</b>, so records stayed current without manual entry"],
+ delivered:[
+  ["One","Source of truth for the entire commercial team"],
+  ["Zero","Spreadsheets left in the workflow — replaced outright, not run in parallel"],
+  ["Base","Became the write target for the Mirakl pipeline the following year"]],
+ tools:["Insightly","Object modelling","Pipeline design","Permissions","Automation rules","Zapier","REST APIs"]},
+
+{id:"mirakl",ch:"integrate",name:"Mirakl → Insightly → Power BI",org:"Worten",when:"2022 – 2023",
+ what:"A Python integration across two platform APIs that moved everything known about a seller in the marketplace back office into the CRM, then surfaced the joined dataset in Power BI.",
+ setup:[
+  "Built <b>Python clients</b> against the Mirakl and Insightly REST APIs — sales, seller ratings, onboarding status",
+  "Embedded <b>Python steps inside Zapier</b> for explicit timeout control and multiple chained calls in one step",
+  "Joined <b>two endpoints before writing</b>, so the CRM only ever receives a complete record",
+  "Surfaced the consolidated dataset as a <b>Power BI dashboard</b> for Account Managers and Business Developers"],
+ delivered:[
+  ["2<i>→1</i>","Systems collapsed into one — the two-tool switch disappeared"],
+  ["Full","Marketplace sales, ratings and onboarding status visible inside the CRM"],
+  ["Ranked","Seller prioritisation moved from memory to marketplace performance data"]],
+ tools:["Python","Mirakl API","Insightly API","REST / JSON","Zapier","Power BI"]},
+
+{id:"cross-crm",ch:"integrate",name:"Cross-CRM Workflow Automation",org:"Worten",when:"2022 – 2023",
+ what:"Zapier and Power Automate workflows spanning Salesforce and HubSpot, removing the manual handling between two CRMs that were never meant to coexist.",
+ setup:[
+  "Identified which records <b>genuinely needed to exist in both systems</b> and which were duplicated out of habit",
+  "Built <b>Zapier and Power Automate</b> flows to propagate only those",
+  "Removed steps from the Sales and Onboarding day rather than adding a tool to their stack"],
+ delivered:[
+  ["2","CRMs kept in agreement without manual double entry"],
+  ["Less","Manual handling for Sales and Onboarding, materially"]],
+ tools:["Zapier","Power Automate","Salesforce","HubSpot"]},
+
+{id:"clearance",ch:"warehouse",name:"Discontinued-Stock Analytics",org:"Worten",when:"2023 – 2024",
+ what:"SQL against the enterprise data warehouse to find slow-moving discontinued inventory, target promotions at it, and report the result upward.",
+ setup:[
+  "Wrote <b>SQL across product, stock and sales tables</b> to track discontinued stock, ageing and late deliveries",
+  "Built <b>cohorts</b> of slow-moving inventory by category and store group",
+  "Targeted <b>promotions at the cohorts</b> rather than applying blanket discounts",
+  "Packaged it as <b>recurring reporting</b> on a cadence, so each cycle could be judged against the last"],
+ delivered:[
+  ["20<i>%</i>","Improvement in clearance rates"],
+  ["C-level","Recurring discontinued-stock and late-delivery reporting"],
+  ["Evidence","Promotional decisions moved from instinct to cohort data"]],
+ tools:["SQL","Enterprise data warehouse","Cohort analysis","Recurring reporting"]},
+
+{id:"leaflet",ch:"warehouse",name:"Leaflet Photo Distribution",org:"Worten",when:"2023 – 2024",
+ what:"A Python algorithm that distributed leaflet product photography across business units, eliminating manual categorisation entirely.",
+ setup:[
+  "Encoded the categorisation rules that a person had been applying by hand",
+  "Wrote a <b>Python algorithm</b> assigning each photo to the correct business unit",
+  "Chose deterministic rules over anything clever — it ran against a <b>print deadline</b>"],
+ delivered:[
+  ["Zero","Manual categorisation left in the cycle"],
+  ["Off","A human bottleneck removed from a deadline-bound process"]],
+ tools:["Python","Rule-based classification","File processing"]},
+
+{id:"portalpro",ch:"number",name:"Management Performance Reporting",org:"PortalPRO",when:"2024 – 2025",
+ what:"The recurring reporting senior management ran the segment on, built alongside a revenue growth run I was personally accountable for.",
+ setup:[
+  "Defined the <b>metric set</b> senior management actually needed, and fixed its shape",
+  "Built the <b>recurring reporting</b> so each period was comparable to the last",
+  "Trained and mentored the sales team on the process behind the numbers"],
+ delivered:[
+  ["200<i>%</i>","Revenue growth across Real Estate and Condominium Administration"],
+  ["1,000<i>+</i>","Service sales delivered"],
+  ["Adopted","Recurring reporting used by senior management"]],
+ tools:["Advanced Excel","Performance reporting","Account development"]},
+
+{id:"looker",ch:"model",name:"Looker Semantic Layer",org:"Farfetch",when:"2026",
+ what:"LookML views, dimensions and filtered measures over boutique order, stock and partner data — so a metric means one thing across every report the team opens.",
+ setup:[
+  "Modelled order, stock and partner tables into <b>LookML views</b>, with the joins defined once in the model",
+  "Wrote <b>custom dimensions</b> for the groupings the team reasons in — category, partner, portfolio, period",
+  "Built <b>filtered and conditional measures</b> that exclude non-representative records, so metrics are clean by construction rather than by remembering to filter",
+  "Wrote the <b>SQL underneath</b>: multi-table joins with window functions for period-over-period, rolling and ranked metrics"],
+ delivered:[
+  ["One","Definition per metric, across every team report"],
+  ["4","Metric families standardised — sell-through, stock ageing, partner YoY, cross-portfolio benchmarking"],
+  ["Self","Account managers self-serve instead of queueing for ad-hoc pulls"]],
+ tools:["LookML","Looker","SQL","Window functions","Tableau Cloud","Data warehouse"]},
+
+{id:"boutique-app",ch:"model",name:"Boutique Performance Web App",org:"Farfetch",when:"2026",
+ what:"A standalone multi-user web application replacing a shared, conflict-prone spreadsheet — with request queuing for concurrency safety and a persistence layer that survives the weekly overwrite of its own source data.",
+ setup:[
+  "Rebuilt the shared workbook as a <b>standalone Apps Script web app</b> — no server, no admin privileges, no provisioned database",
+  "Made concurrency safe with <b>LockService queuing plus forced flush</b>, guaranteeing read-after-write consistency",
+  "Moved computation into a <b>hidden calculation engine</b>, so app traffic never touches the source-of-truth workbook",
+  "Added a <b>weekly snapshot job</b> sweeping all portfolios into a history store, plus a structured comment log that survives the source overwrite",
+  "Surfaced it as <b>dual-axis Chart.js trend views</b> and an 8-card KPI grid isolating top performers and steepest declines"],
+ delivered:[
+  ["40","Account Managers working concurrently without overwriting each other"],
+  ["4","Portfolios on one tool instead of four parallel tracking habits"],
+  ["First","Longitudinal view of stock and YoY performance the team has ever had"]],
+ tools:["Google Apps Script","JavaScript","Chart.js","LockService","Google Sheets"]},
+
+{id:"briefing",ch:"model",name:"AI Partner Briefing Engine",org:"Farfetch",when:"2026",
+ what:"A two-stage LLM pipeline that reads a partner's full communication history, extracts the relationship context, and generates an adaptive commercial brief.",
+ setup:[
+  "Used <b>Looker scheduled delivery into Sheets</b> as the data source, so a brief and a dashboard can never disagree about a number",
+  "<b>Stage one</b> extracts relationship context from the full partner communication history",
+  "<b>Stage two</b> generates the brief from that context plus current performance, with structured output parsing",
+  "Ran it on a <b>queue-based execution model</b> to work inside the Apps Script 6-minute ceiling and API rate limits",
+  "Delivered as Google Docs, in the format the team already reviews partners in"],
+ delivered:[
+  ["≈50<i>h</i>","Of manual preparation removed every month"],
+  ["100<i>+</i>","Partners briefed each cycle, instead of whoever there was time for"],
+  ["Zero","Manual steps — it runs unattended"]],
+ tools:["Google Apps Script","Anthropic Claude API","Looker","Google Docs API","Queue-based execution"],
+ note:"Built with no admin privileges, no cloud project creation and no local API auth."},
+
+{id:"confluence",ch:"model",name:"Confluence Reporting Pipeline",org:"Farfetch",when:"2026",
+ what:"A scheduled CI/CD pipeline that reads the master workbook and rewrites the monthly Confluence reporting pages with no manual step.",
+ setup:[
+  "Scheduled on <b>GitHub Actions</b>, so no local machine and no person sits in the dependency chain",
+  "Reads the <b>master workbook</b> and derives the reporting period through dynamic season detection",
+  "Applies <b>store-group aggregation and cascading HTML label matching</b> to build the page structure from the data",
+  "Writes through the <b>Confluence API</b>, with a CLI page-ID override for targeted reruns"],
+ delivered:[
+  ["Zero","Manual steps in the monthly page rebuild"],
+  ["Monthly","Reporting lands on the same day, in the same shape, every cycle"]],
+ tools:["Python","GitHub Actions","Confluence API","Google Sheets"]},
+
+{id:"tracker",ch:"model",name:"Partner Task Tracker &amp; Doc Sync",org:"Farfetch",when:"2026",
+ what:"A self-contained task tracker holding state once, with a companion sync script that propagates it into nine partner documentation sets.",
+ setup:[
+  "Built a <b>single-file web app</b> with Drive-persisted JSON storage",
+  "Added <b>date-specific recurring reminders</b> and a three-level subtask hierarchy",
+  "Wrote a <b>companion sync script</b> propagating tracker state into 9 individual partner Google Docs"],
+ delivered:[
+  ["9","Documentation sets kept current without manual editing"],
+  ["One","Writeable copy — everything else is a projection of it"]],
+ tools:["Google Apps Script","HTML / JS / CSS","Google Drive","Google Docs API"]},
+
+{id:"scoring",ch:"forward",name:"Store Location Scoring Engine",org:"Capstone · Porto Business School",when:"2026",
+ what:"A weighted, validated model scoring Portuguese municipalities for physical retail viability, built by joining four public datasets that share no common key.",
+ setup:[
+  "Pulled four sources: <b>INE BGRI census data, geoapi.pt, Overture Maps</b> POIs and purchasing-power indices",
+  "Used <b>SQL spatial joins and multi-source aggregation</b> to reconcile geographies at different grains",
+  "Built a <b>weighted scoring model</b>, then validated it",
+  "Kept the weights <b>explicit and adjustable</b>, so the model exposes its assumptions"],
+ delivered:[
+  ["4","Incompatible public datasets reconciled into one model"],
+  ["Ranked","Municipalities scored for retail viability — reproducible, not a judgement call"]],
+ tools:["Python","SQL","Spatial joins","INE BGRI","geoapi.pt","Overture Maps"]},
+
+{id:"budget",ch:"forward",name:"Banking &amp; Budget Automation",org:"Personal",when:"Ongoing",
+ what:"Parses and categorises bank transactions into a monthly budget and expense view. Small, unglamorous, and still running.",
+ setup:[
+  "<b>Python</b> process parsing transaction data into budget lines",
+  "Categorisation rules maintained in one place",
+  "Output into a <b>Google Sheets</b> monthly budget and expense view"],
+ delivered:[
+  ["One","User. It has run every month since and I have not gone back to doing it by hand"]],
+ tools:["Python","Google Sheets"]}
+],
+
+toolkit:[
+ {group:"Programming",items:["SQL","Python","JavaScript","Google Apps Script","HTML / CSS","pandas"]},
+ {group:"Data & BI",items:["BigQuery","SQL Server","Databricks","LookML semantic modelling","Looker","Power BI","Tableau Cloud","Window functions & CTEs","ETL pipeline design","Metric governance"]},
+ {group:"Automation",items:["GitHub Actions (CI/CD)","Scheduled jobs & triggers","Queue-based execution","Concurrency control","Zapier (incl. embedded Python)","Power Automate"]},
+ {group:"APIs & Integration",items:["REST APIs","JSON","Mirakl API","Insightly API","Anthropic Claude API","Looker API","Google Workspace APIs","Confluence API","gspread"]},
+ {group:"Business Systems",items:["CRM architecture & administration","Object models & pipelines","Insightly","Salesforce","HubSpot","Confluence","Advanced Excel"]},
+ {group:"AI / LLM",items:["Multi-stage prompt pipelines","Context extraction","Structured output parsing","Claude Code","ChatGPT / Codex"]}
+],
+
+education:[
+ {title:"Executive Master in Business Analytics & Artificial Intelligence",org:"Porto Business School — University of Porto",when:"Jan 2026 – Dec 2026",
+  note:"60 ECTS, second-cycle (Master's level) under Bologna/EHEA. AMBA, AACSB and EFMD accredited."},
+ {title:"Bachelor's Degree in Business Administration & Management",org:"Instituto Superior de Administração e Gestão (ISAG), Porto",when:"2016 – 2019",note:""}
+],
+
+languages:["Portuguese — Native","English — C2","Spanish — C1"],
+
+/* ---------------------------------------------------------
+   INTERESTS — intentionally empty. Nothing renders while it is.
+   Add entries and a "Beyond the work" block appears on Toolkit.
+   { name:"", note:"" }
+   --------------------------------------------------------- */
+interests:[]
+
+};
+
+/* =========================================================== */
+const PHOTO="data:image/jpeg;base64,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AAYZAAAFEAAUQAgAEAAgASAAAPsHqIAEiAKgQAAAAQQBEAVAACAAAAAKAIAAICEBQCAiIQQAIAAwgAARCgBIAIEqQBIABQACoABIAAiBFgAKMARQACAAQAAAgAEAAAARAABgAEAIQQABRQAKAABEACcAADAACIABCABUgAACWWEAI4BSABCAQAKABABQgEACgAKIAgAAQEABEAAHAACAAFRAAqIESAQQAAFGAAQAggIAAAAAGAAIoACAAAoLAAkUAQIIgAUAICQALTlrggACsgAAUAAAgiAREAgACABBhABAACEBSABBAABIAAACAUAAFQACIAQABEIAAAEAAAiAAAdIAABkASgASAAABBQAUQAmgAEBAABQAAQABBARBCBfQgoBAAUWQACJwAAAgAAAHABIAAAIUBQAAAkBFAAAKAAgAAAAAiAAAgICABRUAIYAAy5AAAlAAAagAAACIAQAAEAABAE0AAA4ACgAABQABAQAAAAAAECBAgQCgIMAhRUAAAAAA4AAKoAAAIAAAAAQABQAJyAAQABqVgACJAABMABCIAIAQCUAIAKYAUWEQAABUoA2Ri3EAQAABEAUgBFgAAIIACggARIBQAAAAgAIAAAUQgAgIACKAABVgBQgAJAAAIABQQEACiQARJBAKYAACQAIAAACKAAEACACAQAAgCACKAAFRAgoAAAARIAACAAAKAABAgAKAAAIAACIAFgCggCgACZAFAigAAIAAAlgAAiIgAFWAEABAAABAAAAAAKAABAAAAkgAgAAIgChAACqiERgBQAhwVoCoAARcAFQJQABa0AlWsAUQAIiQAAFiABFwAAgAACIAALAAKAAAAwAAAIgAAAQEAAgAUAHCCACgAFACrgAq8AQEqgAAiIgAUUAABAkAAEQAAqJAMAwAAAYAARCQAAAYQAVAAAABASAoAAqQAEQAKhVAAoAHQDTWACwQAQAQBIAABUAAAEAEAFAAAriAIAAAB1fSigAYAoAAhiAAAgIAIAAAIAjQAAAiCIApCgIBKCAAEJ4GWASQAUEAAACogAEUAAAAUAAKsIALghAAAAAYMQAEQBBAAAAgIEEArCAAICAogQACAAAAQCiAASAAEEACAAFG65hOfgEigAAAAwAAGeRBUoACIgAAoAARAAYAABAIgQASggAqBAFAADYQAAEAAAQcAgFCQABHVABAAQA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";
+const $=s=>document.querySelector(s);
+const E=s=>String(s??"").replace(/[<>]/g,c=>({'<':'&lt;','>':'&gt;'}[c]));
+const P=DATA.profile;
+const pad=n=>String(n).padStart(2,"0");
+const chOf=id=>DATA.projects.filter(p=>p.ch===id);
+const getCh=id=>DATA.chapters.find(c=>c.id===id);
+const getPr=id=>DATA.projects.find(p=>p.id===id);
+
+$("#barnav").innerHTML =
+  DATA.chapters.map((c,i)=>`<a href="#/c/${c.id}" data-ch="${c.id}">${pad(i+1)}</a>`).join("")
+  + `<a href="#/toolkit" data-ch="toolkit">Toolkit</a>`;
+
+/* ---------- views ---------- */
+function home(){
+ return `
+ <section class="panel hero rv">
+   <div class="kick"><span class="lbl">${E(P.role)}</span><span class="lbl">${E(P.location)}</span></div>
+   <h1 class="namemark"><span>João</span><span>Pinto</span><span>Machado</span></h1>
+   <div class="hero-foot">
+     <p>${E(P.intro)}</p>
+     <div class="hero-right">
+       <img src="${PHOTO}" alt="${E(P.name)}">
+       <span class="tag">${E(P.tagline)}</span>
+     </div>
+   </div>
+ </section>
+
+ <section class="panel deep rv">
+   <div class="shead"><h2>The path</h2><span class="par">(${pad(DATA.chapters.length)} chapters — ${DATA.projects.length} systems)</span></div>
+   <nav class="idx">
+     ${DATA.chapters.map((c,i)=>`
+       <a href="#/c/${c.id}">
+         <span class="n">(${pad(i+1)})</span>
+         <span class="t">${E(c.title)}<em>${E(c.era)}</em></span>
+         <span class="d">${E(c.lede)}</span>
+         <span class="c">${chOf(c.id).length} →</span>
+       </a>`).join("")}
+   </nav>
+ </section>
+
+ <section class="panel rv">
+   <div class="shead"><h2>Read it<br>however you like</h2><span class="par">(Three ways in)</span></div>
+   <nav class="plist">
+     <a href="#/c/origin"><span class="n">(01)</span><span><h3>Start at the beginning</h3><p>Seven chapters in order — how a commercial operator became the person who builds the tooling.</p></span><span class="go">In order</span></a>
+     <a href="#/p/looker"><span class="n">(02)</span><span><h3>Jump to the strongest work</h3><p>The Looker semantic layer, the Mirakl pipeline and the boutique web app.</p></span><span class="go">Best of</span></a>
+     <a href="#/toolkit"><span class="n">(03)</span><span><h3>Just show me the stack</h3><p>Tools, education and languages, on one page.</p></span><span class="go">Toolkit</span></a>
+   </nav>
+ </section>`;
+}
+
+function chapter(id){
+ const c=getCh(id); if(!c) return home();
+ const i=DATA.chapters.indexOf(c), prev=DATA.chapters[i-1], next=DATA.chapters[i+1];
+ const list=chOf(id);
+ return `
+ <section class="panel rv">
+   <div class="crumb"><a href="#/">Index</a><span>/</span><span>Chapter ${pad(i+1)}</span></div>
+   <div class="chgrid">
+     <div>
+       <span class="par">(${E(c.era)})</span>
+       <h1 class="dsp" style="font-size:clamp(2rem,6.4vw,4.6rem);text-transform:uppercase;margin-top:16px">${E(c.title)}</h1>
+     </div>
+     <p class="chlede">${E(c.lede)}</p>
+   </div>
+ </section>
+
+ <section class="panel deep rv">
+   <div class="shead"><h2>The role</h2><span class="par">(Where I was)</span></div>
+   ${c.roles.map(r=>`
+     <div class="rolebox">
+       <p class="rm">${E(r.when)} — ${E(r.org)}</p>
+       <h3>${E(r.title)}</h3>
+       <ul>${r.points.map(p=>`<li>${E(p)}</li>`).join("")}</ul>
+     </div>`).join("")}
+ </section>
+
+ ${list.length?`
+ <section class="panel rv">
+   <div class="shead"><h2>What I built</h2><span class="par">(${pad(list.length)} ${list.length===1?"system":"systems"})</span></div>
+   <nav class="plist">
+     ${list.map((p,k)=>`
+       <a href="#/p/${p.id}">
+         <span class="n">(${pad(k+1)})</span>
+         <span><h3>${p.name}</h3><p>${E(p.what)}</p></span>
+         <span class="go">Open</span>
+       </a>`).join("")}
+   </nav>
+ </section>`:""}
+
+ <nav class="pager">
+   ${prev?`<a href="#/c/${prev.id}"><em>← Previous</em><b>${E(prev.title)}</b></a>`:`<a href="#/"><em>← Back</em><b>Index</b></a>`}
+   ${next?`<a href="#/c/${next.id}"><em>Next →</em><b>${E(next.title)}</b></a>`:`<a href="#/contact"><em>End of the path →</em><b>Contact</b></a>`}
+ </nav>`;
+}
+
+function project(id){
+ const p=getPr(id); if(!p) return home();
+ const c=getCh(p.ch), sibs=chOf(p.ch), k=sibs.indexOf(p);
+ const prev=sibs[k-1], next=sibs[k+1];
+ return `
+ <section class="panel rv">
+   <div class="crumb"><a href="#/">Index</a><span>/</span><a href="#/c/${c.id}">${E(c.title)}</a><span>/</span><span>${pad(k+1)}</span></div>
+   <h1 class="ptitle">${p.name}</h1>
+   <div class="pmeta">
+     <span>Where — <b>${E(p.org)}</b></span>
+     <span>When — <b>${E(p.when)}</b></span>
+     <span>Chapter — <b>${E(c.title)}</b></span>
+   </div>
+   <p class="pwhat">${E(p.what)}</p>
+ </section>
+
+ <section class="panel rv">
+   <div class="shead"><h2>How it was set up</h2><span class="par">(The build)</span></div>
+   <div class="steps">
+     ${p.setup.map((s,n)=>`<div class="step"><span class="sn">(${pad(n+1)})</span><p>${s}</p></div>`).join("")}
+   </div>
+   ${p.note?`<p class="lbl" style="margin-top:22px;letter-spacing:.14em">Constraint — ${E(p.note)}</p>`:""}
+ </section>
+
+ <section class="panel deep rv">
+   <div class="shead"><h2>What it delivered</h2><span class="par">(The result)</span></div>
+   <div class="deliv">
+     ${p.delivered.map(d=>`<div><span class="num">${d[0]}</span><p>${E(d[1])}</p></div>`).join("")}
+   </div>
+ </section>
+
+ <section class="panel rv">
+   <div class="shead"><h2>Built with</h2><span class="par">(Stack)</span></div>
+   <div class="tools">${p.tools.map(t=>`<span>${E(t)}</span>`).join("")}</div>
+ </section>
+
+ <nav class="pager">
+   ${prev?`<a href="#/p/${prev.id}"><em>← Previous</em><b>${prev.name}</b></a>`
+        :`<a href="#/c/${c.id}"><em>← Back to chapter</em><b>${E(c.title)}</b></a>`}
+   ${next?`<a href="#/p/${next.id}"><em>Next →</em><b>${next.name}</b></a>`
+        :`<a href="#/c/${c.id}"><em>Chapter complete →</em><b>${E(c.title)}</b></a>`}
+ </nav>`;
+}
+
+function toolkit(){
+ return `
+ <section class="panel rv">
+   <div class="crumb"><a href="#/">Index</a><span>/</span><span>Toolkit</span></div>
+   <h1 class="ptitle">The stack</h1>
+   <p class="pwhat">Listed only where a system in this portfolio backs it up. Every line here has a page you can open.</p>
+ </section>
+
+ <section class="panel deep rv">
+   <div class="shead"><h2>Tools</h2><span class="par">(In practice)</span></div>
+   <div class="tk">
+     ${DATA.toolkit.map(t=>`<div><h4>${E(t.group)}</h4><ul>${t.items.map(i=>`<li>${E(i)}</li>`).join("")}</ul></div>`).join("")}
+   </div>
+ </section>
+
+ <section class="panel rv">
+   <div class="shead"><h2>Education</h2><span class="par">(Formal)</span></div>
+   <div class="edu">
+     ${DATA.education.map(e=>`<div><p class="w">${E(e.when)}</p><h3>${E(e.title)}</h3><p>${E(e.org)}</p>${e.note?`<p>${E(e.note)}</p>`:""}</div>`).join("")}
+   </div>
+   <div class="shead" style="margin-top:clamp(30px,5vw,56px)"><h2>Languages</h2><span class="par">(Spoken)</span></div>
+   <div class="tools">${DATA.languages.map(l=>`<span>${E(l)}</span>`).join("")}</div>
+ </section>
+
+ ${DATA.interests.length?`
+ <section class="panel deep rv">
+   <div class="shead"><h2>Beyond the work</h2><span class="par">(Off the clock)</span></div>
+   <div class="edu">${DATA.interests.map(x=>`<div><h3>${E(x.name)}</h3><p>${E(x.note)}</p></div>`).join("")}</div>
+ </section>`:""}`;
+}
+
+function contact(){
+ const rows=[`<a href="mailto:${P.email}"><span>${E(P.email)}</span><em>Email</em></a>`,
+             `<a href="${P.linkedin}" target="_blank" rel="noopener"><span>LinkedIn</span><em>Profile</em></a>`];
+ if(P.showPhone&&P.phone) rows.push(`<a href="tel:${P.phone.replace(/\s/g,"")}"><span>${E(P.phone)}</span><em>Phone</em></a>`);
+ if(P.cvUrl) rows.push(`<a href="${P.cvUrl}" target="_blank" rel="noopener"><span>Curriculum vitae</span><em>PDF</em></a>`);
+ rows.push(`<span><span>${E(P.location)}</span><em>Based in</em></span>`);
+ return `
+ <section class="panel rv">
+   <div class="crumb"><a href="#/">Index</a><span>/</span><span>Contact</span></div>
+   <span class="par">(End of the path)</span>
+   <h1 class="cbig" style="margin-top:18px">Let's talk about<br>what you need built</h1>
+   <p class="pwhat">${E(P.availability)}</p>
+   <div class="clist">${rows.join("")}</div>
+ </section>`;
+}
+
+/* ---------- router ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{rootMargin:"0px 0px -8% 0px"});
+
+function route(){
+ const q=(location.hash||"#/").replace(/^#\/?/,"").split("/");
+ const a=q[0],b=q[1];
+ let html,mark=null;
+ if(a==="c"&&b){html=chapter(b);mark=b}
+ else if(a==="p"&&b){const p=getPr(b);html=project(b);mark=p?p.ch:null}
+ else if(a==="toolkit"){html=toolkit();mark="toolkit"}
+ else if(a==="contact"){html=contact()}
+ else html=home();
+
+ const s=$("#stage");
+ s.innerHTML=`<div class="enter">${html}</div>`;
+ document.querySelectorAll("#barnav a").forEach(x=>x.classList.toggle("on",x.dataset.ch===mark));
+ s.querySelectorAll(".rv").forEach((n,i)=>{n.style.transitionDelay=(i*70)+"ms";io.observe(n)});
+ window.scrollTo({top:0,behavior:"instant"});
+ s.focus({preventScroll:true});
+}
+addEventListener("hashchange",route);
+addEventListener("beforeprint",()=>document.querySelectorAll(".rv").forEach(n=>n.classList.add("in")));
+route();
+</script>
+</body>
+</html>
